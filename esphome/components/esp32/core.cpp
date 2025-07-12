@@ -26,7 +26,46 @@ namespace esphome {
 
 void IRAM_ATTR HOT yield() { vPortYield(); }
 uint32_t IRAM_ATTR HOT millis() { return (uint32_t) (esp_timer_get_time() / 1000ULL); }
-void IRAM_ATTR HOT delay(uint32_t ms) { vTaskDelay(ms / portTICK_PERIOD_MS); }
+
+// Delay at least the specified number of milliseconds.
+// (May delay a bit longer, but will never delay for a shorter time).
+//
+// Implementation Note:
+//     vTaskDelay(N) waits for the clock to tick over N times.  This is
+//     SUBTLY DIFFERENT from waiting for (N * portTICK_PERIOD_MS) milliseconds.
+//     The delay may be 1 tick shorter than that, because the clock
+//     may happen to tick over immediately after the wait starts.
+//
+//     That is, vTaskDelay(N) actually waits for between
+//     ((N-1) * portTICK_PERIOD_MS) milliseconds
+//     and (N * portTICK_PERIOD_MS) milliseconds.
+//     (Plus however many microseconds are needed for the function call and
+//     return, plus possible further delays due to other tasks running on
+//     the processor).
+//
+//     For example, if the clock ticks every 1ms, then vTaskDelay(1) may
+//     return immediately, without waiting the 1ms as the caller wanted.
+//     The delay will be 0ms to 1ms.
+//
+//     Another example, if the clock ticks every 1ms, then vTaskDelay(10) may
+//     return after just 9ms.  The delay will be 9ms to 10ms.
+//
+//     For delay(), that's not what the caller wants, the caller wants to wait
+//     *at least* the specified time.  (For example, waiting for some hardware
+//     to initialise when we know how long that takes).
+//
+//     So we add 1 tick to the wait time before we pass it to vTaskDelay().
+//
+//     Also, if the clock does not tick every millisecond, then we ensure we
+//     round UP to the next number of whole clock ticks.
+//
+//     For example, if the clock ticks every 10ms, then delay(1) will block
+//     for 10ms to 20ms.
+//
+void IRAM_ATTR HOT delay(uint32_t ms) {
+  vTaskDelay((ms + ((uint32_t) portTICK_PERIOD_MS - 1u)) / (uint32_t) portTICK_PERIOD_MS + 1u);
+}
+
 uint32_t IRAM_ATTR HOT micros() { return (uint32_t) esp_timer_get_time(); }
 void IRAM_ATTR HOT delayMicroseconds(uint32_t us) { delay_microseconds_safe(us); }
 void arch_restart() {
