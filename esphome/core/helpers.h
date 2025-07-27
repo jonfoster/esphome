@@ -530,6 +530,11 @@ float gamma_correct(float value, float gamma);
 /// Reverts gamma correction of \p gamma to \p value.
 float gamma_uncorrect(float value, float gamma);
 
+/// Convert \p red, \p green and \p blue (all 0-1) values to \p hue (0-1), \p saturation (0-1) and \p value (0-1).
+void rgb_to_hsvf(float red, float green, float blue, float &hue, float &saturation, float &value);
+/// Convert \p hue (0-1), \p saturation (0-1) and \p value (0-1) to \p red, \p green and \p blue (all 0-1).
+void hsvf_to_rgb(float hue, float saturation, float value, float &red, float &green, float &blue);
+
 /// Convert \p red, \p green and \p blue (all 0-1) values to \p hue (0-360), \p saturation (0-1) and \p value (0-1).
 void rgb_to_hsv(float red, float green, float blue, int &hue, float &saturation, float &value);
 /// Convert \p hue (0-360), \p saturation (0-1) and \p value (0-1) to \p red, \p green and \p blue (all 0-1).

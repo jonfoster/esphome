@@ -496,19 +496,21 @@ float gamma_uncorrect(float value, float gamma) {
   return powf(value, 1 / gamma);
 }
 
-void rgb_to_hsv(float red, float green, float blue, int &hue, float &saturation, float &value) {
+void rgb_to_hsvf(float red, float green, float blue, float &hue, float &saturation, float &value) {
   float max_color_value = std::max(std::max(red, green), blue);
   float min_color_value = std::min(std::min(red, green), blue);
   float delta = max_color_value - min_color_value;
 
   if (delta == 0) {
-    hue = 0;
+    hue = 0.0;
   } else if (max_color_value == red) {
-    hue = int(fmod(((60 * ((green - blue) / delta)) + 360), 360));
+    hue = (green - blue) / (6 * delta);
+    if (hue < 0.0)
+      hue += 1.0;
   } else if (max_color_value == green) {
-    hue = int(fmod(((60 * ((blue - red) / delta)) + 120), 360));
+    hue = (blue - red) / (6 * delta) + 1.0 / 3.0;
   } else if (max_color_value == blue) {
-    hue = int(fmod(((60 * ((red - green) / delta)) + 240), 360));
+    hue = (red - green) / (6 * delta) + 2.0 / 3.0;
   }
 
   if (max_color_value == 0) {
@@ -519,10 +521,19 @@ void rgb_to_hsv(float red, float green, float blue, int &hue, float &saturation,
 
   value = max_color_value;
 }
-void hsv_to_rgb(int hue, float saturation, float value, float &red, float &green, float &blue) {
+
+void rgb_to_hsv(float red, float green, float blue, int &hue, float &saturation, float &value) {
+  float huef;
+  rgb_to_hsvf(red, green, blue, huef, saturation, value);
+  hue = int(360 * huef);
+}
+
+void hsvf_to_rgb(float hue, float saturation, float value, float &red, float &green, float &blue) {
   float chroma = value * saturation;
-  float hue_prime = fmod(hue / 60.0, 6);
-  float intermediate = chroma * (1 - fabs(fmod(hue_prime, 2) - 1));
+  float hue_prime = fmod(hue * 6.0f, 6.0f);
+  if (hue_prime < 0.0f)
+    hue_prime += 6.0f;
+  float intermediate = chroma * (1 - fabs(fmod(hue_prime, 2.0f) - 1));
   float delta = value - chroma;
 
   if (0 <= hue_prime && hue_prime < 1) {
@@ -558,6 +569,13 @@ void hsv_to_rgb(int hue, float saturation, float value, float &red, float &green
   red += delta;
   green += delta;
   blue += delta;
+}
+
+void hsv_to_rgb(int hue, float saturation, float value, float &red, float &green, float &blue) {
+  float huef = fmod(hue / 360.0f, 1.0f);
+  if (huef < 0.0f)
+    huef += 1.0f;
+  hsvf_to_rgb(huef, saturation, value, red, green, blue);
 }
 
 uint8_t HighFrequencyLoopRequester::num_requests = 0;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
