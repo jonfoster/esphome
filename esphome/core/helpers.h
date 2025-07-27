@@ -160,18 +160,18 @@ constexpr std::array<uint8_t, sizeof(T)> decode_value(T val) {
 }
 
 /// Reverse the order of 8 bits.
-inline uint8_t reverse_bits(uint8_t x) {
+inline constexpr uint8_t reverse_bits(uint8_t x) {
   x = ((x & 0xAA) >> 1) | ((x & 0x55) << 1);
   x = ((x & 0xCC) >> 2) | ((x & 0x33) << 2);
   x = ((x & 0xF0) >> 4) | ((x & 0x0F) << 4);
   return x;
 }
 /// Reverse the order of 16 bits.
-inline uint16_t reverse_bits(uint16_t x) {
+inline constexpr uint16_t reverse_bits(uint16_t x) {
   return (reverse_bits(static_cast<uint8_t>(x & 0xFF)) << 8) | reverse_bits(static_cast<uint8_t>((x >> 8) & 0xFF));
 }
 /// Reverse the order of 32 bits.
-inline uint32_t reverse_bits(uint32_t x) {
+inline constexpr uint32_t reverse_bits(uint32_t x) {
   return (reverse_bits(static_cast<uint16_t>(x & 0xFFFF)) << 16) |
          reverse_bits(static_cast<uint16_t>((x >> 16) & 0xFFFF));
 }
