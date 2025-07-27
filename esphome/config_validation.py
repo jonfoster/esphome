@@ -848,6 +848,8 @@ def time_period_str_unit(value):
 
 
 def time_period_in_milliseconds_(value):
+    if value.nanoseconds is not None and value.nanoseconds != 0:
+        raise Invalid("Maximum precision is milliseconds")
     if value.microseconds is not None and value.microseconds != 0:
         raise Invalid("Maximum precision is milliseconds")
     return TimePeriodMilliseconds(**value.as_dict())
@@ -891,6 +893,8 @@ def update_interval(value):
     return positive_time_period_milliseconds(value)
 
 
+# Note that "positive_time_period" accepts a time period of zero, as
+# well as strictly positive values.
 time_period = Any(time_period_str_unit, time_period_str_colon, time_period_dict)
 positive_time_period = All(time_period, Range(min=TimePeriod()))
 positive_time_period_milliseconds = All(
