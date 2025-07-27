@@ -1,7 +1,21 @@
 #include "esp_hsv_color.h"
+#include "esphome/core/helpers.h"
 
 namespace esphome {
 namespace light {
+
+ESPHSVColor::ESPHSVColor(Color const &color) {
+  // Convert red, green and blue (all 0-1) values to hue (0-1), saturation (0-1) and value (0-1).
+  float hue;
+  float saturation;
+  float value;
+  rgb_to_hsvf(color.red / 255.0, color.green / 255.0, color.blue / 255.0, hue, saturation, value);
+
+  // Convert to the 0-255 ranges used by this class.
+  this->hue = static_cast<uint8_t>(lroundf(hue * 255.0));
+  this->saturation = static_cast<uint8_t>(lroundf(saturation * 255.0));
+  this->value = static_cast<uint8_t>(lroundf(value * 255.0));
+}
 
 Color ESPHSVColor::to_rgb() const {
   // based on FastLED's hsv rainbow to rgb
