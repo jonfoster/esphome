@@ -1,6 +1,6 @@
 #include "esphome/core/log.h"
 #include "milight_rx_component.h"
-#include "MiLightRadioConfig.h"
+#include "milight_radio_config.h"
 #include "milight_parser_internal.h"
 #include "esphome/core/helpers.h"
 

@@ -1,4 +1,4 @@
-#include "MiLightRadioConfig.h"
+#include "milight_radio_config.h"
 
 namespace esphome {
 namespace milight_rx {

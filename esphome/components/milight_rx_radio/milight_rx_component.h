@@ -3,8 +3,8 @@
 #include "esphome/core/component.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/spi/spi.h"
-#include "MiLightRadioRxDriver.h"
-#include "NRF24L01Comms.h"
+#include "milight_radio_driver.h"
+#include "NRF24L01_comms.h"
 #include "esphome/components/milight_rx/milight_rx_radio_event.h"
 #include "esphome/components/milight_rx/milight_rx_remote_event.h"
 #include <vector>
@@ -13,6 +13,45 @@ namespace esphome {
 namespace milight_rx {
 namespace radio {
 
+/**
+ * The ESP Home Component that uses an NRF24L01+ radio to receive
+ * MiLight remote commands.
+ *
+ * This doesn't directly do anything with the received commands, but you can
+ * register listeners to receive the parsed Milight commands and do useful
+ * things with them.  For example, the milight_rx_filter component can be used
+ * to filter only commands from remotes that are paired with a particular light,
+ * and then the milight_rx_target component can be used to actually control the
+ * light based on the received commands.  To aid debugging, there is also a
+ * milight_rx_remote_debug component that can be used to log the decoded
+ * packets to Home Assistant.
+ *
+ * Also allows registering listeners to receive the raw radio packets, which
+ * can be useful for debugging or when adding support for new remotes.
+ * To aid debugging, there is a  milight_rx_radio_debug component that can be
+ * used to log the raw radio packets to Home Assistant.
+ *
+ * The NRF24L01+ is connected over SPI, including a mandatory CS (Chip Select)
+ * pin.  There is also a mandatory GPIO output pin used for the CE (Chip Enable)
+ * pin.  There is also an optional, but strongly recommended, GPIO input pin
+ * used for the IRQ (Interrupt Request) pin.  Not having an IRQ pin will make
+ * the code fall back to polling the radio chip over SPI, which is wasteful
+ * compared to just reading the IRQ pin.
+ *
+ * This component is normally used to receive with a single radio configuration.
+ * The radio configurations are numbered from 0 to 15 inclusive.
+ * Pick the one that works best for your remotes, but the default configuration
+ * of 0 works for the more modern remotes.  If you want to receive on multiple
+ * radio configurations, then use multiple physical NRF24L01+ radio modules,
+ * and multiple instances of this component.
+ *
+ * This component can also be used to scan through all available radio channels.
+ * This can be useful when setting up a system, to find out which radio channel
+ * your remotes are using.  To do this, set the config_index to -1, and set the
+ * scan_time_millis to the time you want to spend scanning each radio channel
+ * in milliseconds.  This mode is not inteded for normal use, it is only to help
+ * you set up your system.
+ */
 class MiLightRxComponent : public Component,
                            public MiLightRxRadioEventSource,
                            public MiLightRxRemoteEventSource,
@@ -38,8 +77,8 @@ class MiLightRxComponent : public Component,
 
  private:
   void try_to_read();
-  void advance_scan_if_needed();
   void handle_raw_packet(const uint8_t *packet_buf, unsigned packet_length);
+  void advance_scan_if_needed();
 
  protected:
   /** Chip enable pin, as configured in device configuration.

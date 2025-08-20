@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <string.h>
-#include "MilightDecrypt.h"
+#include "milight_decrypt.h"
 #include "esphome/core/log.h"
 
 namespace esphome {

@@ -4,7 +4,7 @@
 #include "esphome/components/spi/spi.h"
 #include "esphome/core/gpio.h"
 #include "NRF24L01.h"
-#include "MiLightRadioConfig.h"
+#include "milight_radio_config.h"
 
 namespace esphome {
 namespace milight_rx {

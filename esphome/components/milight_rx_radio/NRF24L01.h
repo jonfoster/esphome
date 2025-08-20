@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include "esphome/components/spi/spi.h"
 #include "esphome/core/gpio.h"
-#include "NRF24L01Comms.h"
-#include "NRF24L01RadioConfig.h"
+#include "NRF24L01_comms.h"
+#include "NRF24L01_radio_config.h"
 
 namespace esphome {
 namespace milight_rx {
@@ -26,11 +26,13 @@ namespace milight_rx {
  */
 class NRF24L01 {
  private:
+  /** Low level communications with the chip.  (SPI plus some GPIOs) */
   NRF24L01Comms comms_;
 
   /** Fixed size of packet payloads. */
   uint8_t payload_size_ = 0;
 
+  /** Flag indicating there may be some data to read, and we must check. */
   bool force_fifo_check_ = false;
 
  public:

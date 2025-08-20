@@ -1,5 +1,5 @@
 #include <string.h>
-#include "NRF24L01RadioConfig.h"
+#include "NRF24L01_radio_config.h"
 
 namespace esphome {
 namespace milight_rx {

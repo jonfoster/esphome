@@ -1,6 +1,6 @@
 #include "esphome/core/log.h"
 #include "esphome/core/hal.h"
-#include "NRF24L01Comms.h"
+#include "NRF24L01_comms.h"
 
 namespace esphome {
 namespace milight_rx {

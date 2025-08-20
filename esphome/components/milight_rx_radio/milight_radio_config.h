@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "NRF24L01RadioConfig.h"
+#include "NRF24L01_radio_config.h"
 #include "esphome/core/helpers.h"
 
 namespace esphome {

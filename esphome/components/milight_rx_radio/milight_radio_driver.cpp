@@ -1,8 +1,8 @@
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
-#include "MiLightRadioRxDriver.h"
-#include "MiLightRadioConfig.h"
-#include "MiLightDecrypt.h"
+#include "milight_radio_driver.h"
+#include "milight_radio_config.h"
+#include "milight_decrypt.h"
 
 namespace esphome {
 namespace milight_rx {
